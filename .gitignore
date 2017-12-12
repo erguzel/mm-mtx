@@ -1,0 +1,13 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+#CLion auto generated files
+CMakeLists.txt
+cmake-build-debug/
+.idea/
+
