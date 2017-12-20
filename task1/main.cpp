@@ -130,39 +130,41 @@ public:float* getValue(){
 
 //represents a complete matrix (this structure could be used for other tasks as well, since 1 cpp file demanded per task, this struct will be reused for other tasks in repeated core manner.)
 class Matrix{
-    int *rowNum, *colNum;
-    Entry * Entries;
+
+    int rowNum, colNum;
+    Entry  **Entries;
+
 //constructor with row and column number initializers
-public:Matrix(int* rownum, int* colnum){
-        rowNum = rownum;
-        colNum = colnum;
+public:Matrix(int *rownum, int *colnum){
+        rowNum = *rownum;
+        colNum = *colnum;
     }
 
-public: Matrix (Entry** entries){
-        Entries =  *entries;
+public: Matrix (Entry **entries){
+        Entries =  entries;
     }
 
-public:void setRowNum(int *rownum){
+public:void setRowNum(int rownum){
         rowNum = rownum;
     }
 
 public:int* getRowNum(){
-        return rowNum;
+        return &rowNum;
     }
 
-public:void setColNum(int *colnum){
+public:void setColNum(int colnum){
         colNum = colnum;
     }
 
-public:int getColNum(){
-        return  *colNum;
+public:int* getColNum(){
+        return  &colNum;
     }
 
-public:void setEntries(Entry** entries){
-        Entries = *entries;
+public:void setEntries(Entry entries[]){
+        Entries = &entries;
     }
 
-public:Entry* getEntries(){
+public:Entry** getEntries(){
         return Entries;
     }
 
@@ -180,12 +182,12 @@ public: static Entry* CreateEntry(int colid, int rowid, float val){
 
     //creates a matrix object and returns its adress;
 public: static Matrix* CreateMatrix(int rownum, int colnum){
-        Matrix m (&rownum,&colnum);//actual definition in heap with the  adress of parameters
-        return &m;
+        Matrix * m = new Matrix (&rownum,&colnum);//actual definition in heap with the  adress of parameters
+        return m;
     };
-public:static Matrix* CreateMatrix(Entry * Entries){
-        Matrix m2 (&Entries);
-        return & m2;
+public:static Matrix* CreateMatrix(Entry  **Entries){
+        Matrix* m2 = new Matrix(Entries);
+        return  m2;
     }
 };
 
@@ -207,6 +209,8 @@ int main(int arg, char** args) {
     //size of the entry pointer array
     int siz = sizeof(ents)/ sizeof(*ents);
 
+    cout<<"Size of entries: "<<siz<< endl;
+
     //print any value of entries int the entry pointer array
     for(int i = 0 ; i<siz; i++){
         cout<< *ents[i]->getValue()<< endl;
@@ -221,6 +225,18 @@ int main(int arg, char** args) {
     for(int i = 0 ; i<siz; i++){
         cout<< *ents[i]->getValue()<< endl;
     }
+
+    cout<<"-------Matrix-----"<<endl;
+
+
+    Matrix *m = fac.CreateMatrix(ents);
+
+    Entry * ents1 =  *m->getEntries();
+    int size = sizeof(ents1)/ sizeof(*ents1);
+
+
+    cout<<size<<endl;
+
 
 
 
