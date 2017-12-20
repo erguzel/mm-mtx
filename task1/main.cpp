@@ -38,6 +38,9 @@ public:static void Initialize(int arg, char** args){
         commandLineParser(arg, args);
     }
 
+public: static void Configure(){
+
+    }
     //Parses command line parameters and sets the global switches for run mode.
 private:static void commandLineParser(int arg, char** args){
         // cout<<"the parameter is"<<option<<endl;
@@ -56,21 +59,33 @@ private:static void commandLineParser(int arg, char** args){
             return;
         }
         else{
-            for (int i = 1 ; i < 4 ; i++){
+            bool flag = false;
+            for (int i = 1 ; i < arg ; i++){
                 option = args[i];
                 // if one of the parameters is -a
                 if(option =="-a"){
-                    logMessage("mod a is activated..");
+                    logMessage("mode a is activated..");
                     isA = true;
+                    flag = true;
                 }
                     //if one if the parameters is -b
                 else if (option == "-b"){
-                    logMessage("mod b is activated..");
+                    logMessage("mode b is activated..");
                     isB = true;
+                    flag = true;
                 }
                 else{
                     cout<<"the argument " << args[i] << " is not supported yet"<<endl;
                 }
+
+            }
+
+            if (flag == true){
+                logMessage("program starting with valid arguments..");
+            } else{
+                logMessage("To run in multimode, please specify no parameter or specify both correctly.");
+                logMessage("No valid argument provided, quitting...");
+                return;
             }
         }
     }
