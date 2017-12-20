@@ -10,4 +10,4 @@
 CMakeLists.txt
 cmake-build-debug/
 .idea/
-
+.DS_Store
