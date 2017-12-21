@@ -126,6 +126,7 @@ public:void setValue(float val){
 public:float* getValue(){
         return &value;
     }
+
 };
 
 //represents a complete matrix (this structure could be used for other tasks as well, since 1 cpp file demanded per task, this struct will be reused for other tasks in repeated core manner.)
@@ -145,6 +146,7 @@ public: Matrix (Entry **entries){
     }
 
 public:void setRowNum(int rownum){
+
         rowNum = rownum;
     }
 
@@ -160,8 +162,8 @@ public:int* getColNum(){
         return  &colNum;
     }
 
-public:void setEntries(Entry entries[]){
-        Entries = &entries;
+public:void setEntries(Entry **entries){
+        Entries = entries;
     }
 
 public:Entry** getEntries(){
@@ -180,11 +182,11 @@ public: static Entry* CreateEntry(int colid, int rowid, float val){
 
     }
 
-    //creates a matrix object and returns its adress;
+    /*creates a matrix object and returns its adress;
 public: static Matrix* CreateMatrix(int rownum, int colnum){
-        Matrix * m = new Matrix (&rownum,&colnum);//actual definition in heap with the  adress of parameters
-        return m;
-    };
+        Matrix * sm = new Matrix (&rownum,&colnum);//actual definition in heap with the  adress of parameters
+        return sm;
+    };*/
 public:static Matrix* CreateMatrix(Entry  **Entries){
         Matrix* m2 = new Matrix(Entries);
         return  m2;
@@ -199,46 +201,51 @@ int main(int arg, char** args) {
 
 
     Factory fac;
-    Entry *poent1 = fac.CreateEntry(1,1,1.12);
-    Entry *poent2 = fac.CreateEntry(1,2,1.15);
-    Entry *poent3 = fac.CreateEntry(1,3,1.17);
 
-    //list of entry pointers pointing real value in heap
-    Entry *ents[] = {poent1,poent2,poent3};
+    Entry *newEnt1 = fac.CreateEntry(3,4,1.1);
+    Entry *newEnt2 = fac.CreateEntry(3,5,15.5);
+    Entry *newEnt3 = fac.CreateEntry(3,6,18.1);
+    Entry *newEnt4 = fac.CreateEntry(4,1,13.2);
+    Entry *newEnt5 = fac.CreateEntry(4,2,19.1);
+    Entry *newEnt6 = fac.CreateEntry(4,3,11.1);
 
-    //size of the entry pointer array
-    int siz = sizeof(ents)/ sizeof(*ents);
+    Entry * sixents[] ={newEnt1,newEnt2,newEnt3, newEnt4,newEnt5,newEnt6};
 
-    cout<<"Size of entries: "<<siz<< endl;
+    Entry * newents[36];
+    int entrynum = 0;
+    for(int am = 0; am<6 ; am++){
 
-    //print any value of entries int the entry pointer array
-    for(int i = 0 ; i<siz; i++){
-        cout<< *ents[i]->getValue()<< endl;
+        for(int n = 0; n<6; n++){
+            float number =  (am+n+1)*(am+n+2);
+            Entry * ent = fac.CreateEntry(am+1,n+1,number);
+            newents[entrynum] = ent;
+            entrynum++;
+
+        }
     }
 
+   for(int u = 0; u<36; u++){
+       cout<< "row ind:"<< *newents[u]->getRowInd()<< " col ind:" << *newents[u]->getColInd()<<" val:" << *newents[u]->getValue() << endl;
 
-    poent1->setValue(3.15);
+   }
 
-    cout<<"------------";
+    Matrix * mat = fac.CreateMatrix(newents);
 
-    //print any value of entries int the entry pointer array
-    for(int i = 0 ; i<siz; i++){
-        cout<< *ents[i]->getValue()<< endl;
+    cout<<"matrix starts-----"<<endl;
+
+    for(int h = 0; h<36; h++){
+        cout<< " row ind:"<< *mat->getEntries()[h]->getRowInd() << " col ind:" << *mat->getEntries()[h]->getColInd() << " value:" <<*mat->getEntries()[h]->getValue()<< endl;
     }
 
-    cout<<"-------Matrix-----"<<endl;
+    cout<<"setting matrix entries to sixentries"<<endl;
 
-
-    Matrix *m = fac.CreateMatrix(ents);
-
-    Entry * ents1 =  *m->getEntries();
-    int size = sizeof(ents1)/ sizeof(*ents1);
-
-
-    cout<<size<<endl;
+    mat->setEntries(sixents);
 
 
 
+    for(int h = 0; h<6; h++){
+        cout<< " row ind:"<< *mat->getEntries()[h]->getRowInd() << " col ind:" << *mat->getEntries()[h]->getColInd() << " value:" <<*mat->getEntries()[h]->getValue()<< endl;
+    }
 
     logMessage("stophere");
 
