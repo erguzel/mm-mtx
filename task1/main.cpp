@@ -13,36 +13,57 @@ using namespace std;
 
 const string parameters[2] = {"-a", "-b"};
 
-//global switches
+/**
+ * Represents the run mode -a
+ */
 static bool isA = false;
+/**
+ * Represents the run mode -b
+ */
 static bool isB = false;
+/**
+ * Represents the clock frequency calculation mode -clock
+ */
 static bool isClock = false;
-//
-//global variables;
+
+/**
+ * Represents current command line argument value
+ */
 string option;
 
 //--------utilization functions
 
-//writes given message to console or log file. // todo
+/**
+ * Writes a simple string message to the console
+ * @param message the string consol message
+ */
 void logMessage(string message){
     cout<< message << endl;
 }
 
 //-----USER DEFINED TYPES
 
-//initializes the system : parses commandline parameters, sets global switches for the program run mode
+/**
+ * Represents the program initializer object
+ */
 class initializer{
 
+/**
+ * Initializes the program with the required configurations.
+ */
 public:static void Initialize(int arg, char** args){
 
         commandLineParser(arg, args);
     }
-
-    //configures run structures according to the run mode
+/**
+ * Configures the program according to the run modes
+ */
 public: static void Configure(){
 
     }
-    //Parses command line parameters and sets the global switches for run mode.
+/**
+ * Parses command line arguments
+ */
 private:static void commandLineParser(int arg, char** args){
         // cout<<"the parameter is"<<option<<endl;
 
@@ -92,7 +113,9 @@ private:static void commandLineParser(int arg, char** args){
     }
 };
 
-//represents a matrix element (this structure could be used for other tasks as well, since 1 cpp file demanded per task, this struct will be reused for other tasks in repeated core manner.)
+/**
+ * Represents a single matrix entry
+ */
 class Entry{
     int rowInd, colInd;
     float value;
@@ -129,13 +152,15 @@ public:float* getValue(){
 
 };
 
-//represents a complete matrix (this structure could be used for other tasks as well, since 1 cpp file demanded per task, this struct will be reused for other tasks in repeated core manner.)
+/**
+ * Represents a whole matrix object
+ */
 class Matrix{
 
     int rowNum, colNum;
     Entry  **Entries;
 
-//constructor with row and column number initializers
+
 public:Matrix(int *rownum, int *colnum){
         rowNum = *rownum;
         colNum = *colnum;
@@ -175,18 +200,18 @@ public:Entry** getEntries(){
 // OBJECT FACTORY
 
 class Factory{
-
+/**
+ * Creates a pointer to a new instance of Entry object.
+ */
 public: static Entry* CreateEntry(int colid, int rowid, float val){
         Entry * e = new Entry(&colid,&rowid,&val);
         return e;
 
     }
 
-    /*creates a matrix object and returns its adress;
-public: static Matrix* CreateMatrix(int rownum, int colnum){
-        Matrix * sm = new Matrix (&rownum,&colnum);//actual definition in heap with the  adress of parameters
-        return sm;
-    };*/
+/**
+ * Creates a pointer to a new instance of Matrix object.
+ */
 public:static Matrix* CreateMatrix(Entry  **Entries){
         Matrix* m2 = new Matrix(Entries);
         return  m2;
@@ -196,57 +221,33 @@ public:static Matrix* CreateMatrix(Entry  **Entries){
 //
 
 
-//--------main
+class foo{
+    int a;
+
+public:foo(int aa){
+        a = aa;
+    }
+
+public:int getaProp(){
+        return a;
+    }
+
+public:void setaProp(int aa){
+        a =aa;
+    }
+
+
+};
+
+
+/**
+ * Main program logic.
+ * @param arg represents the size of the command line argument char array
+ * @param args represents the pointer array of command line argument values
+ * @return returns a trivial integer
+ */
 int main(int arg, char** args) {
 
 
-    Factory fac;
-
-    Entry *newEnt1 = fac.CreateEntry(3,4,1.1);
-    Entry *newEnt2 = fac.CreateEntry(3,5,15.5);
-    Entry *newEnt3 = fac.CreateEntry(3,6,18.1);
-    Entry *newEnt4 = fac.CreateEntry(4,1,13.2);
-    Entry *newEnt5 = fac.CreateEntry(4,2,19.1);
-    Entry *newEnt6 = fac.CreateEntry(4,3,11.1);
-
-    Entry * sixents[] ={newEnt1,newEnt2,newEnt3, newEnt4,newEnt5,newEnt6};
-
-    Entry * newents[36];
-    int entrynum = 0;
-    for(int am = 0; am<6 ; am++){
-
-        for(int n = 0; n<6; n++){
-            float number =  (am+n+1)*(am+n+2);
-            Entry * ent = fac.CreateEntry(am+1,n+1,number);
-            newents[entrynum] = ent;
-            entrynum++;
-
-        }
-    }
-
-   for(int u = 0; u<36; u++){
-       cout<< "row ind:"<< *newents[u]->getRowInd()<< " col ind:" << *newents[u]->getColInd()<<" val:" << *newents[u]->getValue() << endl;
-
-   }
-
-    Matrix * mat = fac.CreateMatrix(newents);
-
-    cout<<"matrix starts-----"<<endl;
-
-    for(int h = 0; h<36; h++){
-        cout<< " row ind:"<< *mat->getEntries()[h]->getRowInd() << " col ind:" << *mat->getEntries()[h]->getColInd() << " value:" <<*mat->getEntries()[h]->getValue()<< endl;
-    }
-
-    cout<<"setting matrix entries to sixentries"<<endl;
-
-    mat->setEntries(sixents);
-
-
-
-    for(int h = 0; h<6; h++){
-        cout<< " row ind:"<< *mat->getEntries()[h]->getRowInd() << " col ind:" << *mat->getEntries()[h]->getColInd() << " value:" <<*mat->getEntries()[h]->getValue()<< endl;
-    }
-
-    logMessage("stophere");
 
 }
