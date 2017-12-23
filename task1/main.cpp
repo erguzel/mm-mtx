@@ -44,6 +44,150 @@ void logMessage(string message){
 //-----USER DEFINED TYPES
 
 /**
+ * Represents a single matrix entry
+ */
+class Entry{
+    int rowInd, colInd;
+    float value;
+public:Entry(int *rowid, int *colid, float *val){
+        rowInd = *rowid ; colInd = *colid; value = *val;
+    }
+
+public:Entry(){
+
+    }
+public:void setRowInd(int ind){
+        rowInd = ind;
+    }
+
+public:int* getRowInd(){
+        return &rowInd;
+    }
+
+public:void setColInd(int ind){
+        colInd = ind;
+    }
+
+public:int* getColInd(){
+        return &colInd;
+    }
+
+public:void setValue(float val){
+        value = val;
+    }
+
+public:float* getValue(){
+        return &value;
+    }
+
+};
+
+/**
+ * Represents a whole matrix object
+ */
+class Matrix{
+
+    int rowNum, colNum;
+    Entry  **Entries;
+
+
+public:Matrix(int *rownum, int *colnum){
+        rowNum = *rownum;
+        colNum = *colnum;
+    }
+
+public: Matrix (Entry **entries, int size){
+
+        Entries = entries;
+
+    }
+
+public:void setRowNum(int rownum){
+
+        rowNum = rownum;
+    }
+
+public:int* getRowNum(){
+        return &rowNum;
+    }
+
+public:void setColNum(int colnum){
+        colNum = colnum;
+    }
+
+public:int* getColNum(){
+        return  &colNum;
+    }
+
+public:void setEntries(Entry **entries, int size){
+        if(rowNum !=0 && colNum !=0){
+            if(size != rowNum*colNum)
+                logMessage("matrix dimensions do not match!!.. Quitting");
+            return;
+        } else{
+            Entries = entries;
+        }
+    }
+
+public:Entry** getEntries(){
+        return Entries;
+    }
+
+};
+
+class foo{
+    int a;
+
+public:foo(int *aa){
+        a = *aa;
+    }
+
+public:int* getaProp(){
+        return &a;
+    }
+
+public:void setaProp(int aa){
+        a =aa;
+    }
+};
+
+// OBJECT FACTORY
+
+ class Factory{
+/**
+ * Creates a pointer to a new instance of Entry object.
+ */
+public: static Entry* CreateEntry(int colid, int rowid, float val){
+        Entry * e = new Entry(&colid,&rowid,&val); //actual heap allocation for Entry object
+        return e;
+    }
+
+/**
+ * Creates an instance of a Matrix object.
+ * @param **Entries the adress to the pointer array of entry objects
+ * @returns the adress of Matrix object.
+ */
+public:static Matrix* CreateMatrix(Entry  **Entries, int size){
+        Matrix* m = new Matrix(Entries, size); //actual heap allocation for Matrix object
+        return  m;
+    }
+/**
+ * Create an instance of a Matrix object
+ * @param colNum Column number of the Matrix
+ * @param rowNum Row number of the Matrix
+ * @returns the adress of the Matrix object
+ */
+public:static Matrix* CreateMatrix(int colNum, int rowNum){
+        Matrix *m = new Matrix(&colNum,&rowNum);
+        return m;
+    }
+};
+
+class MatrixManager{
+
+};
+
+/**
  * Represents the program initializer object
  */
 class initializer{
@@ -58,7 +202,31 @@ public:static void Initialize(int arg, char** args){
 /**
  * Configures the program according to the run modes
  */
-public: static void Configure(){
+public: static Matrix* Configure(){
+        Factory f;
+        Entry * ents[36];
+
+        int val = 0;
+        //configures matrix A and matrix B for subtask A (6x6 matrices both)
+        if(true){
+            for(int i = 0; i< 6; i++){
+                for(int j = 0; j< 6 ; j++){
+                    Entry * ent = f.CreateEntry(i+1,j+1,val+1);
+                    ents [val] = ent;
+                    val++;
+                }
+            }
+
+        Matrix *m = f.CreateMatrix(ents,36);
+            return m;
+
+        }
+
+        //configures matrix A and matrix b for subtask B
+        if (isB){
+
+        }
+
 
     }
 /**
@@ -114,140 +282,24 @@ private:static void commandLineParser(int arg, char** args){
 };
 
 /**
- * Represents a single matrix entry
- */
-class Entry{
-    int rowInd, colInd;
-    float value;
-public:Entry(int *rowid, int *colid, float *val){
-        rowInd = *rowid ; colInd = *colid; value = *val;
-    }
-
-public:Entry(){
-
-    }
-public:void setRowInd(int *ind){
-        rowInd = *ind;
-    }
-
-public:int* getRowInd(){
-        return &rowInd;
-    }
-
-public:void setColInd(int ind){
-        colInd = ind;
-    }
-
-public:int* getColInd(){
-        return &colInd;
-    }
-
-public:void setValue(float val){
-        value = val;
-    }
-
-public:float* getValue(){
-        return &value;
-    }
-
-};
-
-/**
- * Represents a whole matrix object
- */
-class Matrix{
-
-    int rowNum, colNum;
-    Entry  **Entries;
-
-
-public:Matrix(int *rownum, int *colnum){
-        rowNum = *rownum;
-        colNum = *colnum;
-    }
-
-public: Matrix (Entry **entries){
-        Entries =  entries;
-    }
-
-public:void setRowNum(int rownum){
-
-        rowNum = rownum;
-    }
-
-public:int* getRowNum(){
-        return &rowNum;
-    }
-
-public:void setColNum(int colnum){
-        colNum = colnum;
-    }
-
-public:int* getColNum(){
-        return  &colNum;
-    }
-
-public:void setEntries(Entry **entries){
-        Entries = entries;
-    }
-
-public:Entry** getEntries(){
-        return Entries;
-    }
-
-};
-
-// OBJECT FACTORY
-
-class Factory{
-/**
- * Creates a pointer to a new instance of Entry object.
- */
-public: static Entry* CreateEntry(int colid, int rowid, float val){
-        Entry * e = new Entry(&colid,&rowid,&val);
-        return e;
-
-    }
-
-/**
- * Creates a pointer to a new instance of Matrix object.
- */
-public:static Matrix* CreateMatrix(Entry  **Entries){
-        Matrix* m2 = new Matrix(Entries);
-        return  m2;
-    }
-};
-
-//
-
-
-class foo{
-    int a;
-
-public:foo(int aa){
-        a = aa;
-    }
-
-public:int getaProp(){
-        return a;
-    }
-
-public:void setaProp(int aa){
-        a =aa;
-    }
-
-
-};
-
-
-/**
  * Main program logic.
  * @param arg represents the size of the command line argument char array
  * @param args represents the pointer array of command line argument values
  * @return returns a trivial integer
  */
 int main(int arg, char** args) {
+    initializer i;
+    Matrix * mat = i.Configure();
+
+    //delete(mat);
+    //mat=0x0;
+
+    cout<<*mat->getEntries()[35]->getValue()<<endl;
+
+    mat->getEntries()[35]->setValue(3.25);
+
+    cout<<*mat->getEntries()[35]->getValue()<<endl;
 
 
-
+    logMessage("stop here");
 }
