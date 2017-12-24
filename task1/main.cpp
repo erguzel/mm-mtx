@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <map>
 
 #pragma message ("please use -a or -b options for subquestions of task1.")
 #pragma message ("please send -clock flag to enable clock time calculation.")
@@ -49,8 +50,8 @@ void logMessage(string message){
 class Entry{
     int rowInd, colInd;
     float value;
-public:Entry(int *rowid, int *colid, float *val){
-        rowInd = *rowid ; colInd = *colid; value = *val;
+public:Entry(int rowid, int colid, float val){
+        rowInd = rowid ; colInd = colid; value = val;
     }
 
 public:Entry(){
@@ -60,24 +61,24 @@ public:void setRowInd(int ind){
         rowInd = ind;
     }
 
-public:int* getRowInd(){
-        return &rowInd;
+public:int getRowInd(){
+        return rowInd;
     }
 
 public:void setColInd(int ind){
         colInd = ind;
     }
 
-public:int* getColInd(){
-        return &colInd;
+public:int getColInd(){
+        return colInd;
     }
 
 public:void setValue(float val){
         value = val;
     }
 
-public:float* getValue(){
-        return &value;
+public:float getValue(){
+        return value;
     }
 
 };
@@ -88,131 +89,58 @@ public:float* getValue(){
 class Matrix{
 
     int rowNum, colNum;
-    Entry  **Entries;
+    Entry  *Entries;
 
-public:Matrix(int *rownum, int *colnum){
-        rowNum = *rownum;
-        colNum = *colnum;
-    }
-
-public: Matrix (Entry **entries, int size){
-
-        Entries = entries;
-
-    }
-
-public:void setRowNum(int rownum){
-
+public:Matrix(int rownum, int colnum){
         rowNum = rownum;
+        colNum = colnum;
+    }
+
+public:Matrix(Entry *entries, int size){
+        Entries = entries;
     }
 
 public:int* getRowNum(){
         return &rowNum;
     }
 
-public:void setColNum(int colnum){
-        colNum = colnum;
-    }
-
 public:int* getColNum(){
         return  &colNum;
     }
 
-public:void setEntries(Entry **entries, int size){
-        if(rowNum !=0 && colNum !=0){
-            if(size != rowNum*colNum)
-                logMessage("matrix dimensions do not match!!.. Quitting");
-            return;
-        } else{
-            Entries = entries;
-        }
-    }
 
-public:Entry** getEntries(){
+public:Entry* getEntries(){
         return Entries;
     }
 
-public: Matrix* generateSequentialIdentical(){
-
-    }
 
 };
 
-class foo{
-    int a;
-
-public:foo(int *aa){
-        a = *aa;
+class ObjectFactory{
+public:Entry createEntry(int rw, int cl, float vl){
+        return Entry(rw,cl,vl);
     }
 
-public:int* getaProp(){
-        return &a;
-    }
-
-public:void setaProp(int aa){
-        a =aa;
-    }
-};
-
-// OBJECT FACTORY
-
- class Factory{
-/**
- * Creates a pointer to a new instance of Entry object.
- */
-public: static Entry* CreateEntry(int colid, int rowid, float val){
-        Entry * e = new Entry(&colid,&rowid,&val); //actual heap allocation for Entry object
-        return e;
-    }
-
-/**
- * Creates an instance of a Matrix object.
- * @param **Entries the adress to the pointer array of entry objects
- * @returns the adress of Matrix object.
- */
-public:static Matrix* CreateMatrix(Entry  **Entries, int size){
-        Matrix* m = new Matrix(Entries, size); //actual heap allocation for Matrix object
-        return  m;
-    }
-/**
- * Create an instance of a Matrix object
- * @param colNum Column number of the Matrix
- * @param rowNum Row number of the Matrix
- * @returns the adress of the Matrix object
- */
-public:static Matrix* CreateMatrix(int colNum, int rowNum){
-        Matrix *m = new Matrix(&colNum,&rowNum);
-        return m;
-    }
-};
-
-class MatrixManager{
-
-public:static Matrix* generateSequentialMatrix (int rowNum, int colNum, float startvalue = 1){
+public:Entry*createSequentialEntry(int coln, int rown, float startvalu=0){
 
 
-        startvalue = (startvalue == 0)? startvalue+1 : startvalue;
-        int index = startvalue == 1 ? (int)(startvalue) : 1;
-        Factory f;
-        int sizze = rowNum * colNum-1;
-        Entry *ents[sizze];
-        //configures matrix A and matrix B for subtask A (6x6 matrices both)
-        for(int i = 0; i< 6 ; i++){
-            for(int j = 0; j< 6 ; j++){
-              Entry*  ent = f.CreateEntry(i+1,j+1,startvalue);
-                ents[index-1] =ent;
-                startvalue++;
+        startvalu = (startvalu == 0)? 1 : startvalu;
+        int index=(startvalu != 1)? 1 : startvalu;
+        int size = rown*coln;
+
+        Entry enr [36];
+
+        for(int i = 0; i < 6; i++){
+            for(int j=0; j<6; j++){
+
+                enr[index-1] = Entry(i+1,j+1, startvalu);
                 index++;
+                startvalu++;
+
             }
         }
-        Matrix *m = f.CreateMatrix(ents,sizze);
-        return m;
 
-    }
-
-public:static Matrix* multiplyMatrices(Matrix *m1, Matrix *m2){
-        Matrix *resultant;
-
+        return enr;
     }
 };
 
@@ -228,14 +156,7 @@ public:static void Initialize(int arg, char** args){
 
         commandLineParser(arg, args);
     }
-/**
- * Configures the program according to the run modes
- */
-public: static Matrix* Configure(){
 
-
-
-    }
 /**
  * Parses command line arguments
  */
@@ -295,17 +216,37 @@ private:static void commandLineParser(int arg, char** args){
  * @return returns a trivial integer
  */
 int main(int arg, char** args) {
-    initializer i;
-    MatrixManager mm ;
-    Matrix *mat = mm.generateSequentialMatrix(6,6);
-    Matrix *target = mm.generateSequentialMatrix(6,6,*mat->getEntries()[35]->getValue());
-    target = mm.multiplyMatrices(mat,target);
-
-    cout<<*target->getEntries()[35]->getValue()<<endl;
-    //delete(mat);
-    //mat=0x0;
 
 
+    ObjectFactory o;
 
-    logMessage("stop here");
+    std:map<int,float> matrix;
+    int row=6;
+    int colum = 6;
+    float value=1;
+    for (int i=0; i<8; i++){
+        for(int j = 0; j<8; j++){
+            string sad = to_string(i+1)+to_string(j+1);
+            int key = atoi(sad.c_str());
+            matrix[key] = value;
+            cout<<sad<<"val: "<<value<<endl;
+            value++;
+        }
+    }
+
+    std::map <int,float> matrix2;
+
+    for (int i=0; i<8; i++){
+        for(int j = 0; j<8; j++){
+            string sad = to_string(i+1)+to_string(j+1);
+            int key = atoi(sad.c_str());
+            matrix2[key] = value;
+            cout<<sad<<"val: "<<value<<endl;
+            value++;
+        }
+    }
+    cout<<matrix2[66]<<endl;
+    cout<<matrix [66]<<endl;
+
+    logMessage("Hello from program, just stop here essoglusu");
 }
