@@ -90,7 +90,6 @@ class Matrix{
     int rowNum, colNum;
     Entry  **Entries;
 
-
 public:Matrix(int *rownum, int *colnum){
         rowNum = *rownum;
         colNum = *colnum;
@@ -131,6 +130,10 @@ public:void setEntries(Entry **entries, int size){
 
 public:Entry** getEntries(){
         return Entries;
+    }
+
+public: Matrix* generateSequentialIdentical(){
+
     }
 
 };
@@ -185,6 +188,32 @@ public:static Matrix* CreateMatrix(int colNum, int rowNum){
 
 class MatrixManager{
 
+public:static Matrix* generateSequentialMatrix (int rowNum, int colNum, float startvalue = 1){
+
+
+        startvalue = (startvalue == 0)? startvalue+1 : startvalue;
+        int index = startvalue == 1 ? (int)(startvalue) : 1;
+        Factory f;
+        int sizze = rowNum * colNum-1;
+        Entry *ents[sizze];
+        //configures matrix A and matrix B for subtask A (6x6 matrices both)
+        for(int i = 0; i< 6 ; i++){
+            for(int j = 0; j< 6 ; j++){
+              Entry*  ent = f.CreateEntry(i+1,j+1,startvalue);
+                ents[index-1] =ent;
+                startvalue++;
+                index++;
+            }
+        }
+        Matrix *m = f.CreateMatrix(ents,sizze);
+        return m;
+
+    }
+
+public:static Matrix* multiplyMatrices(Matrix *m1, Matrix *m2){
+        Matrix *resultant;
+
+    }
 };
 
 /**
@@ -203,29 +232,7 @@ public:static void Initialize(int arg, char** args){
  * Configures the program according to the run modes
  */
 public: static Matrix* Configure(){
-        Factory f;
-        Entry * ents[36];
 
-        int val = 0;
-        //configures matrix A and matrix B for subtask A (6x6 matrices both)
-        if(true){
-            for(int i = 0; i< 6; i++){
-                for(int j = 0; j< 6 ; j++){
-                    Entry * ent = f.CreateEntry(i+1,j+1,val+1);
-                    ents [val] = ent;
-                    val++;
-                }
-            }
-
-        Matrix *m = f.CreateMatrix(ents,36);
-            return m;
-
-        }
-
-        //configures matrix A and matrix b for subtask B
-        if (isB){
-
-        }
 
 
     }
@@ -289,16 +296,15 @@ private:static void commandLineParser(int arg, char** args){
  */
 int main(int arg, char** args) {
     initializer i;
-    Matrix * mat = i.Configure();
+    MatrixManager mm ;
+    Matrix *mat = mm.generateSequentialMatrix(6,6);
+    Matrix *target = mm.generateSequentialMatrix(6,6,*mat->getEntries()[35]->getValue());
+    target = mm.multiplyMatrices(mat,target);
 
+    cout<<*target->getEntries()[35]->getValue()<<endl;
     //delete(mat);
     //mat=0x0;
 
-    cout<<*mat->getEntries()[35]->getValue()<<endl;
-
-    mat->getEntries()[35]->setValue(3.25);
-
-    cout<<*mat->getEntries()[35]->getValue()<<endl;
 
 
     logMessage("stop here");
