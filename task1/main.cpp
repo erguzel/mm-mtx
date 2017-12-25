@@ -252,6 +252,8 @@ int main(int arg, char** args) {
         cout<< *sm2->getEntries()[i].getValue()<<endl;
     }
 
+    delete sm;
+    delete sm2;
 
     logMessage("stop here");
 }
