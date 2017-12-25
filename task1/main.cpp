@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <map>
+#include <list>
 
 #pragma message ("please use -a or -b options for subquestions of task1.")
 #pragma message ("please send -clock flag to enable clock time calculation.")
@@ -54,94 +55,119 @@ public:Entry(int rowid, int colid, float val){
         rowInd = rowid ; colInd = colid; value = val;
     }
 
-public:Entry(){
-
-    }
-public:void setRowInd(int ind){
-        rowInd = ind;
-    }
+    Entry() {}
 
 public:int getRowInd(){
         return rowInd;
     }
 
-public:void setColInd(int ind){
-        colInd = ind;
-    }
 
 public:int getColInd(){
         return colInd;
     }
 
-public:void setValue(float val){
-        value = val;
+public:float* getValue(){
+        return &value;
     }
 
-public:float getValue(){
-        return value;
-    }
+};
+
+
+class IMatrix{ //TODO
 
 };
 
 /**
- * Represents a whole matrix object
+ * Represents a matrix object with random or sequential elements
  */
-class Matrix{
+class SequentialMatrix{
 
-    int rowNum, colNum;
-    Entry  *Entries;
+    int _rowNum, _colNum;
+    Entry  *_Entries;
+/**
+ * Creates an instance of matrix object
+ */
+public:SequentialMatrix(int rownum, int colnum, float startvalu=1){
+        _Entries = new Entry[rownum*colnum];
+        _rowNum = rownum;
+        _colNum = colnum;
 
-public:Matrix(int rownum, int colnum){
-        rowNum = rownum;
-        colNum = colnum;
+        setSequentialEntries(rownum,colnum,startvalu);
+    }
+~SequentialMatrix(){
+        delete _Entries;
+    }
+/**
+ * Get row dimension of the Matrix.
+ */
+public:int getRowNum(){
+        return _rowNum;
+    }
+/**
+ * Gets the column dimension of the Matrix
+ */
+public:int getColNum(){
+        return  _colNum;
     }
 
-public:Matrix(Entry *entries, int size){
-        Entries = entries;
+    /**
+     * Gets the value of the matrix element for the given row and column indexes i.e. M(3,5)
+     */
+public:float* getValue(short rowind, short colind){
+
+        return (_Entries[rowind*colind-1].getValue());
+
+    }
+/**
+ * Gets the pointer list of column values for the given row number (1st row, second row etc..)
+ */
+public: float**  getRow(short rownum){
+
+        float *wholerow[_colNum];
+        int count = (rownum-1)*_colNum;
+        short index = 0;
+        for(count; count<count+_colNum; count++ ){
+            wholerow[index]= _Entries[count].getValue();
+            index++;
+        }
+
     }
 
-public:int* getRowNum(){
-        return &rowNum;
+public:std::list<float> getColumn(short colNum){
+//TODO
     }
-
-public:int* getColNum(){
-        return  &colNum;
-    }
-
 
 public:Entry* getEntries(){
-        return Entries;
+        return _Entries;
     }
 
-
-};
-
-class ObjectFactory{
-public:Entry createEntry(int rw, int cl, float vl){
-        return Entry(rw,cl,vl);
-    }
-
-public:Entry*createSequentialEntry(int coln, int rown, float startvalu=0){
-
+/**
+ *
+ * @param rown row dimension of the matrix object
+ * @param coln column dimension of the matrix object
+ * @param startvalu first a_11 value of the matrix
+ */
+void setSequentialEntries(int rown, int coln, float startvalu){
 
         startvalu = (startvalu == 0)? 1 : startvalu;
         int index=(startvalu != 1)? 1 : startvalu;
-        int size = rown*coln;
+//        int size = rown*coln ;
 
-        Entry enr [36];
+        for(int i = 0; i < rown; i++){
 
-        for(int i = 0; i < 6; i++){
-            for(int j=0; j<6; j++){
+            for(int j=0; j<coln; j++){
 
-                enr[index-1] = Entry(i+1,j+1, startvalu);
+                _Entries[index-1] = Entry(i+1,j+1,startvalu);
                 index++;
                 startvalu++;
-
             }
         }
-
-        return enr;
     }
+
+private:void setRandomEntries(int rown, int coln,float interval){
+    //TODO
+    }
+
 };
 
 /**
@@ -217,36 +243,15 @@ private:static void commandLineParser(int arg, char** args){
  */
 int main(int arg, char** args) {
 
+    SequentialMatrix *sm = new SequentialMatrix(6,6,1);
+    SequentialMatrix *sm2 = new SequentialMatrix(6,6,36);
 
-    ObjectFactory o;
 
-    std:map<int,float> matrix;
-    int row=6;
-    int colum = 6;
-    float value=1;
-    for (int i=0; i<8; i++){
-        for(int j = 0; j<8; j++){
-            string sad = to_string(i+1)+to_string(j+1);
-            int key = atoi(sad.c_str());
-            matrix[key] = value;
-            cout<<sad<<"val: "<<value<<endl;
-            value++;
-        }
+    for(int i = 0; i < 36; i++){
+        cout<<"matrix1: "<< *sm->getEntries()[i].getValue()<<" matrix2: ";
+        cout<< *sm2->getEntries()[i].getValue()<<endl;
     }
 
-    std::map <int,float> matrix2;
 
-    for (int i=0; i<8; i++){
-        for(int j = 0; j<8; j++){
-            string sad = to_string(i+1)+to_string(j+1);
-            int key = atoi(sad.c_str());
-            matrix2[key] = value;
-            cout<<sad<<"val: "<<value<<endl;
-            value++;
-        }
-    }
-    cout<<matrix2[66]<<endl;
-    cout<<matrix [66]<<endl;
-
-    logMessage("Hello from program, just stop here essoglusu");
+    logMessage("stop here");
 }
