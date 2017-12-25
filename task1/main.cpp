@@ -124,17 +124,33 @@ public:float* getValue(short rowind, short colind){
 public: float**  getRow(short rownum){
 
         float *wholerow[_colNum];
-        int count = (rownum-1)*_colNum;
-        short index = 0;
-        for(count; count<count+_colNum; count++ ){
-            wholerow[index]= _Entries[count].getValue();
-            index++;
+        int entryindex = (rownum-1)*_colNum;
+        int index = 0;
+        float * adress ;
+        Entry ent;
+        for(index; index<_colNum; index++ ){
+            adress =  _Entries[index+ entryindex].getValue();
+            wholerow[index] = adress;
+            //cout<< *asd <<endl;
         }
-
+        return wholerow;
     }
 
-public:std::list<float> getColumn(short colNum){
-//TODO
+public: float**  getColumn(short colnum){
+
+        float *wholecolumn[_rowNum];
+
+        int index = 0;
+        int entryindex = (colnum-1);
+        float * adress ;
+        Entry ent;
+        for(index; index<_colNum; index++ ){
+            adress =  _Entries[entryindex].getValue();
+            wholecolumn[index] = adress;
+            entryindex = entryindex+_rowNum;
+            //cout<< *asd <<endl;
+        }
+        return wholecolumn;
     }
 
 public:Entry* getEntries(){
@@ -243,14 +259,26 @@ private:static void commandLineParser(int arg, char** args){
  */
 int main(int arg, char** args) {
 
-    SequentialMatrix *sm = new SequentialMatrix(6,6,1);
-    SequentialMatrix *sm2 = new SequentialMatrix(6,6,36);
+    SequentialMatrix *sm = new SequentialMatrix(3,3,1);
+    SequentialMatrix *sm2 = new SequentialMatrix(3,3,9);
 
 
-    for(int i = 0; i < 36; i++){
+    for(int i = 0; i < 9; i++){
         cout<<"matrix1: "<< *sm->getEntries()[i].getValue()<<" matrix2: ";
         cout<< *sm2->getEntries()[i].getValue()<<endl;
     }
+
+    cout<<"-------"<<endl;
+
+    //cout<<*sm->getValue(3,3)<<endl;
+
+
+
+    for(int i=0; i < 3; i++){
+        cout<<*sm2->getColumn(1)[i]<<endl;
+    }
+
+
 
     delete sm;
     delete sm2;
