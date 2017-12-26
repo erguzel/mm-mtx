@@ -49,37 +49,49 @@ void logMessage(string message) {
  * Represents a single matrix entry
  */
 class Entry {
+    //represents column and row indexes in mathematical expression
     int rowInd, colInd;
+    //represents the value of the entry
     float value;
+    /**
+     * Creates and Entry object instance in the heap.
+     * @param rowid
+     */
 public:
     Entry(int rowid, int colid, float val) {
         rowInd = rowid;
         colInd = colid;
         value = val;
     }
-
+/**
+ * Instance constructor with no parameter;
+ */
     Entry() {}
-
+/**
+ * Gets the row index of the Entry instance
+ * @returns the row index of the entry
+ */
 public:
     int getRowInd() {
         return rowInd;
     }
 
-
+/**
+ * Gets the column indice of the Entry instance
+ * @returns the column indice of the
+ */
 public:
     int getColInd() {
         return colInd;
     }
-
+/**
+ * Gets the value pointer of the Entry instance
+ * @returns the value pointer of the Entry instance
+ */
 public:
     float *getValue() {
         return &value;
     }
-
-};
-
-
-class IMatrix { //TODO
 
 };
 
@@ -91,7 +103,7 @@ class SequentialMatrix {
     int _rowNum, _colNum;
     Entry *_Entries;
 /**
- * Creates an instance of matrix object
+ * Creates an instance of SequentialMatrix object
  * Represents a single square matrix initialized with the the elements of sequential numbers (optional)
  * @param noninitialize do not fill the matrixs pointers if stays true
  * @param rowNum column size of the square matrix
@@ -101,29 +113,37 @@ class SequentialMatrix {
 public:
     SequentialMatrix(int rownum, int colnum, float startvalu = 1, bool nonInitialize = true) {
 
+        //represents the Entry list instances
         _Entries = new Entry[rownum * colnum];
+        //represents how many rows of the matrix instance has
         _rowNum = rownum;
+        //represents how many columns of the matrix instance has
         _colNum = colnum;
 
+        //if not want to fill the matrix entries while creating the SequentialMatrix instance
         if(!nonInitialize){
             setSequentialEntries(rownum, colnum, startvalu);
         }
     }
-
+/**
+ * Parameterless constructor of SequentialMatrix object
+ */
     SequentialMatrix() {}
-
+/**
+ * Destructor of SequentialMatrix instance object
+ */
     ~SequentialMatrix() {
         delete _Entries;
     }
 /**
- * Get column dimension of the Matrix.
+ * Gets column dimension of the Matrix
  */
 public:
     int getRowNum() {
         return _rowNum;
     }
 /**
- * Get row dimension of the Matrix
+ * Gets row dimension of the Matrix
  */
 public:
     int getColNum() {
@@ -316,15 +336,15 @@ private:
 void  test(int arg, char** args){
     clock_t t1,t2;
    t1 = clock();
-   SequentialMatrix *sm =  new SequentialMatrix(6, 6, 1, false);
-   SequentialMatrix *sm2 = new SequentialMatrix(6, 6, 1 , false);
+   SequentialMatrix *sm =  new SequentialMatrix(100, 100, 1, false);
+   SequentialMatrix *sm2 = new SequentialMatrix(100, 100, 101 , false);
 
    SequentialMatrix *result =  sm->MultiplyBy(sm2);
 
    int count =0;
 
 
-   for(int a = 0; a < 36; a++){
+   for(int a = 0; a < 100; a++){
        cout<< *result->getEntries()[a].getValue()<<endl;
        count++;
    }
