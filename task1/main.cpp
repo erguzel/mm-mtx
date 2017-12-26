@@ -3,6 +3,8 @@
 //
 
 #include <iostream>
+#include <thread>
+
 
 #pragma message ("please use -a or -b options for subquestions of task1.")
 #pragma message ("please send -clock flag to enable clock time calculation.")
@@ -82,7 +84,7 @@ class IMatrix { //TODO
 };
 
 /**
- * Represents a matrix object with random or sequential elements
+ * Represents a matrix object with sequential elements
  */
 class SequentialMatrix {
 
@@ -90,9 +92,15 @@ class SequentialMatrix {
     Entry *_Entries;
 /**
  * Creates an instance of matrix object
+ * Represents a single square matrix initialized with the the elements of sequential numbers (optional)
+ * @param noninitialize do not fill the matrixs pointers if stays true
+ * @param rowNum column size of the square matrix
+ * @param colNum row size of the square matrix
+ * @param startValu first value of the _Entries array poniter
  */
 public:
     SequentialMatrix(int rownum, int colnum, float startvalu = 1, bool nonInitialize = true) {
+
         _Entries = new Entry[rownum * colnum];
         _rowNum = rownum;
         _colNum = colnum;
@@ -108,14 +116,14 @@ public:
         delete _Entries;
     }
 /**
- * Get row dimension of the Matrix.
+ * Get column dimension of the Matrix.
  */
 public:
     int getRowNum() {
         return _rowNum;
     }
 /**
- * Gets the column dimension of the Matrix
+ * Get row dimension of the Matrix
  */
 public:
     int getColNum() {
@@ -123,7 +131,7 @@ public:
     }
 
     /**
-     * Gets the value of the matrix element for the given row and column indexes i.e. M(3,5)
+     * Get the value  pointer of the matrix element for the given row and column indices (!= indexes) i.e. M(3,5)
      */
 public:
     float *getValue(short rowind, short colind) {
@@ -132,12 +140,18 @@ public:
 
     }
 
-
+/**
+ * gets the pointer collection of entry objects
+ */
 public:
     Entry *getEntries() {
         return _Entries;
     }
-#pragma omp
+
+    /**
+     * @param factor represents the pointer of target matrix to be multiplied.
+     * @returns creates another instance of resultant matrix and return its pointer.
+     */
 public:
     SequentialMatrix *MultiplyBy(SequentialMatrix *factor) {
 
@@ -145,7 +159,6 @@ public:
         float reusltant = 0;
         int index = 0;
         int i =0; int j = 0; int k = 0;
-
         for (i = 0; i < _rowNum; i++) {
             for (j = 0; j < _colNum; j++) {
                for(k = 0; k< factor->_colNum; k++){
@@ -162,7 +175,7 @@ public:
         return product;
     }
 /**
- * Gets the pointer list of column values for the given row number (1st row, second row etc..)
+ * Gets the pointer list of row values for the given row number (1st row, second row etc..)
  */
 public:
     float **getRow(short rownum) {
@@ -182,7 +195,9 @@ public:
         }
         return wholerow;
     }
-
+/**
+ * Gets the pointer list of column values for the given column number (i.e C(2))
+ */
 public:
     float **getColumn(short colnum) {
 
@@ -205,7 +220,7 @@ public:
  *
  * @param rown row dimension of the matrix object
  * @param coln column dimension of the matrix object
- * @param startvalu first a_11 value of the matrix
+ * @param startvalu first index element of the matrix entries i.e a_11 value
  */
     void setSequentialEntries(int rown, int coln, float startvalu) {
 
@@ -247,6 +262,8 @@ public:
 
 /**
  * Parses command line arguments
+ * @param arg commandline argument size
+ * @param args commandline argument pointer list
  */
 private:
     static void commandLineParser(int arg, char **args) {
@@ -296,36 +313,44 @@ private:
     }
 };
 
+void  test(int arg, char** args){
+    clock_t t1,t2;
+   t1 = clock();
+   SequentialMatrix *sm =  new SequentialMatrix(6, 6, 1, false);
+   SequentialMatrix *sm2 = new SequentialMatrix(6, 6, 1 , false);
+
+   SequentialMatrix *result =  sm->MultiplyBy(sm2);
+
+   int count =0;
+
+
+   for(int a = 0; a < 36; a++){
+       cout<< *result->getEntries()[a].getValue()<<endl;
+       count++;
+   }
+   cout<<"number of entry values: "<<count<<endl;
+
+
+   delete sm;
+   delete sm2;
+   delete result;
+   t2 = clock();
+   logMessage("stop here:");
+   float diff ((float)t2-(float)t1);
+   cout <<"runtime : " << diff<<" microsc"<<endl;
+   diff = diff/CLOCKS_PER_SEC;
+   cout <<"runtime : " << diff<<" sc"<<endl;
+
+}
+
 /**
  * Main program logic.
  * @param arg represents the size of the command line argument char array
  * @param args represents the pointer array of command line argument values
- * @return returns a trivial integer
  */
+
 int main(int arg, char **args) {
-    clock_t t1,t2;
-    t1 = clock();
-    //deletes associated object automatically from the unorganized memory after scope.
-    SequentialMatrix *sm =  new SequentialMatrix(6, 6, 1, false);
-    SequentialMatrix *sm2 = new SequentialMatrix(6, 6, 1 , false);
+    test(arg,args);
+    unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
 
-    SequentialMatrix *result =  sm->MultiplyBy(sm2);
-
-    int count =0;
-    for(int a = 0; a < 36; a++){
-        cout<< *result->getEntries()[a].getValue()<<endl;
-        count++;
-    }
-    cout<<"number of entry values: "<<count<<endl;
-
-
-    delete sm;
-    delete sm2;
-    delete result;
-    t2 = clock();
-    logMessage("stop here:");
-    float diff ((float)t2-(float)t1);
-    cout <<"runtime : " << diff<<" microsc"<<endl;
-    diff = diff/CLOCKS_PER_SEC;
-    cout <<"runtime : " << diff<<" sc"<<endl;
 }
