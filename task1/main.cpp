@@ -39,8 +39,8 @@ string option;
  * Writes a simple string message to the console
  * @param message the string consol message
  */
-void logMessage(string message){
-    cout<< message << endl;
+void logMessage(string message) {
+    cout << message << endl;
 }
 
 //-----USER DEFINED TYPES
@@ -48,113 +48,155 @@ void logMessage(string message){
 /**
  * Represents a single matrix entry
  */
-class Entry{
+class Entry {
     int rowInd, colInd;
     float value;
-public:Entry(int rowid, int colid, float val){
-        rowInd = rowid ; colInd = colid; value = val;
+public:
+    Entry(int rowid, int colid, float val) {
+        rowInd = rowid;
+        colInd = colid;
+        value = val;
     }
 
     Entry() {}
 
-public:int getRowInd(){
+public:
+    int getRowInd() {
         return rowInd;
     }
 
 
-public:int getColInd(){
+public:
+    int getColInd() {
         return colInd;
     }
 
-public:float* getValue(){
+public:
+    float *getValue() {
         return &value;
     }
 
 };
 
 
-class IMatrix{ //TODO
+class IMatrix { //TODO
 
 };
 
 /**
  * Represents a matrix object with random or sequential elements
  */
-class SequentialMatrix{
+class SequentialMatrix {
 
     int _rowNum, _colNum;
-    Entry  *_Entries;
+    Entry *_Entries;
 /**
  * Creates an instance of matrix object
  */
-public:SequentialMatrix(int rownum, int colnum, float startvalu=1){
-        _Entries = new Entry[rownum*colnum];
+public:
+    SequentialMatrix(int rownum, int colnum, float startvalu = 1, bool nonInitialize = true) {
+        _Entries = new Entry[rownum * colnum];
         _rowNum = rownum;
         _colNum = colnum;
 
-        setSequentialEntries(rownum,colnum,startvalu);
+        if(!nonInitialize){
+            setSequentialEntries(rownum, colnum, startvalu);
+        }
     }
-~SequentialMatrix(){
+
+    SequentialMatrix() {}
+
+    ~SequentialMatrix() {
         delete _Entries;
     }
 /**
  * Get row dimension of the Matrix.
  */
-public:int getRowNum(){
+public:
+    int getRowNum() {
         return _rowNum;
     }
 /**
  * Gets the column dimension of the Matrix
  */
-public:int getColNum(){
-        return  _colNum;
+public:
+    int getColNum() {
+        return _colNum;
     }
 
     /**
      * Gets the value of the matrix element for the given row and column indexes i.e. M(3,5)
      */
-public:float* getValue(short rowind, short colind){
+public:
+    float *getValue(short rowind, short colind) {
 
-        return (_Entries[rowind*colind-1].getValue());
+        return (_Entries[rowind * colind - 1].getValue());
 
+    }
+
+
+public:
+    Entry *getEntries() {
+        return _Entries;
+    }
+
+public:
+    SequentialMatrix *MultiplyBy(SequentialMatrix *factor) {
+        SequentialMatrix *product = new SequentialMatrix(_rowNum,_colNum, true);
+        float reusltant = 0;
+        int index = 0;
+        int i =0; int j = 0; int k = 0;
+
+        for (i = 0; i < 2; i++) {
+            for (j = 0; j < 2; j++) {
+               for(k = 0; k<2; k++){
+                   reusltant += *getRow(i + 1)[k] * (*factor->getColumn(j + 1)[k]);
+                   if(k == 1){
+                       product->getEntries()[index] = *new Entry(i+1,j+1,reusltant);
+                       index++;
+                       reusltant = 0;
+                   }
+               }
+            }
+
+        }
+        return product;
     }
 /**
  * Gets the pointer list of column values for the given row number (1st row, second row etc..)
  */
-public: float**  getRow(short rownum){
+public:
+    float **getRow(short rownum) {
 
         float *wholerow[_colNum];
-        int entryindex = (rownum-1)*_colNum;
+        int entryindex = (rownum - 1) * _colNum;
         int index = 0;
-        float * adress ;
+        float *adress;
         Entry ent;
-        for(index; index<_colNum; index++ ){
-            adress =  _Entries[index+ entryindex].getValue();
+        for (index; index < _colNum; index++) {
+            adress = _Entries[index + entryindex].getValue();
             wholerow[index] = adress;
             //cout<< *asd <<endl;
         }
         return wholerow;
     }
 
-public: float**  getColumn(short colnum){
+public:
+    float **getColumn(short colnum) {
 
         float *wholecolumn[_rowNum];
 
         int index = 0;
-        int entryindex = (colnum-1);
-        float * adress ;
+        int entryindex = (colnum - 1);
+        float *adress;
         Entry ent;
-        for(index; index<_colNum; index++ ){
-            adress =  _Entries[entryindex].getValue();
+        for (index; index < _colNum; index++) {
+            adress = _Entries[entryindex].getValue();
             wholecolumn[index] = adress;
-            entryindex = entryindex+_rowNum;
+            entryindex = entryindex + _rowNum;
             //cout<< *asd <<endl;
         }
         return wholecolumn;
-    }
-
-public:Entry* getEntries(){
-        return _Entries;
     }
 
 /**
@@ -163,25 +205,26 @@ public:Entry* getEntries(){
  * @param coln column dimension of the matrix object
  * @param startvalu first a_11 value of the matrix
  */
-void setSequentialEntries(int rown, int coln, float startvalu){
+    void setSequentialEntries(int rown, int coln, float startvalu) {
 
-        startvalu = (startvalu == 0)? 1 : startvalu;
-        int index=(startvalu != 1)? 1 : startvalu;
+        startvalu = (startvalu == 0) ? 1 : startvalu;
+        int index = (startvalu != 1) ? 1 : startvalu;
 //        int size = rown*coln ;
 
-        for(int i = 0; i < rown; i++){
+        for (int i = 0; i < rown; i++) {
 
-            for(int j=0; j<coln; j++){
+            for (int j = 0; j < coln; j++) {
 
-                _Entries[index-1] = Entry(i+1,j+1,startvalu);
+                _Entries[index - 1] = Entry(i + 1, j + 1, startvalu);
                 index++;
                 startvalu++;
             }
         }
     }
 
-private:void setRandomEntries(int rown, int coln,float interval){
-    //TODO
+private:
+    void setRandomEntries(int rown, int coln, float interval) {
+        //TODO
     }
 
 };
@@ -189,12 +232,13 @@ private:void setRandomEntries(int rown, int coln,float interval){
 /**
  * Represents the program initializer object
  */
-class initializer{
+class initializer {
 
 /**
  * Initializes the program with the required configurations.
  */
-public:static void Initialize(int arg, char** args){
+public:
+    static void Initialize(int arg, char **args) {
 
         commandLineParser(arg, args);
     }
@@ -202,11 +246,12 @@ public:static void Initialize(int arg, char** args){
 /**
  * Parses command line arguments
  */
-private:static void commandLineParser(int arg, char** args){
+private:
+    static void commandLineParser(int arg, char **args) {
         // cout<<"the parameter is"<<option<<endl;
 
         //no parameters provided
-        if (arg == 1){
+        if (arg == 1) {
             isA = true;
             isB = true;
             logMessage("Multimode run is enabled.");
@@ -214,35 +259,33 @@ private:static void commandLineParser(int arg, char** args){
 
         // firts argument is the file itself.
         //check argument number
-        if (arg-1 > 2){
+        if (arg - 1 > 2) {
             logMessage("error.. too may arguments specified. Quitting...");
             return;
-        }
-        else{
+        } else {
             bool flag = false;
-            for (int i = 1 ; i < arg ; i++){
+            for (int i = 1; i < arg; i++) {
                 option = args[i];
                 // if one of the parameters is -a
-                if(option =="-a"){
+                if (option == "-a") {
                     logMessage("mode a is activated..");
                     isA = true;
                     flag = true;
                 }
                     //if one if the parameters is -b
-                else if (option == "-b"){
+                else if (option == "-b") {
                     logMessage("mode b is activated..");
                     isB = true;
                     flag = true;
-                }
-                else{
-                    cout<<"the argument " << args[i] << " is not supported yet"<<endl;
+                } else {
+                    cout << "the argument " << args[i] << " is not supported yet" << endl;
                 }
 
             }
 
-            if (flag == true){
+            if (flag == true) {
                 logMessage("program starting with valid arguments..");
-            } else{
+            } else {
                 logMessage("To run in multimode, please specify no parameter or specify both correctly.");
                 logMessage("No valid argument provided, quitting...");
                 return;
@@ -257,26 +300,26 @@ private:static void commandLineParser(int arg, char** args){
  * @param args represents the pointer array of command line argument values
  * @return returns a trivial integer
  */
-int main(int arg, char** args) {
+int main(int arg, char **args) {
 
-    SequentialMatrix *sm = new SequentialMatrix(3,3,1);
-    SequentialMatrix *sm2 = new SequentialMatrix(3,3,9);
+    SequentialMatrix *sm = new SequentialMatrix(2, 2, 1, false);
+    SequentialMatrix *sm2 = new SequentialMatrix(2, 2, 5, false);
 
+    SequentialMatrix *result =  sm->MultiplyBy(sm2);
 
-    for(int i = 0; i < 9; i++){
-        cout<<"matrix1: "<< *sm->getEntries()[i].getValue()<<" matrix2: ";
-        cout<< *sm2->getEntries()[i].getValue()<<endl;
+    for(int a = 0; a < 4; a++){
+        cout<< *result->getEntries()[a].getValue()<<endl;
     }
 
-    cout<<"-------"<<endl;
+/*
+    for (int i = 0; i < 4; i++) {
+        cout << "matrix1: " << *sm->getEntries()[i].getValue() << " matrix2: ";
+        cout << *sm2->getEntries()[i].getValue() << endl;
+    }
+*/
+    cout << "-------" << endl;
 
     //cout<<*sm->getValue(3,3)<<endl;
-
-
-
-    for(int i=0; i < 3; i++){
-        cout<<*sm2->getColumn(1)[i]<<endl;
-    }
 
 
 
