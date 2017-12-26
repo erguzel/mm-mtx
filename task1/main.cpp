@@ -3,8 +3,6 @@
 //
 
 #include <iostream>
-#include <map>
-#include <list>
 
 #pragma message ("please use -a or -b options for subquestions of task1.")
 #pragma message ("please send -clock flag to enable clock time calculation.")
@@ -158,8 +156,8 @@ public:
                    }
                }
             }
-
         }
+
         return product;
     }
 /**
@@ -176,7 +174,6 @@ public:
         for (index; index < _colNum; index++) {
             adress = _Entries[index + entryindex].getValue();
             wholerow[index] = adress;
-            //cout<< *asd <<endl;
         }
         return wholerow;
     }
@@ -301,40 +298,27 @@ private:
  * @return returns a trivial integer
  */
 int main(int arg, char **args) {
+    clock_t t1,t2;
+    t1 = clock();
+    //deletes associated object automatically from the unorganized memory after scope.
+    auto *sm = new SequentialMatrix(6, 6, 1, false);
+    auto *sm2 = new SequentialMatrix(6, 6, 1 , false);
 
-    SequentialMatrix *sm = new SequentialMatrix(3, 3, 1, false);
-    SequentialMatrix *sm2 = new SequentialMatrix(3, 3, 10, false);
-
-//    for(int m =0; m<9; m++){
-//        cout<< *sm2->getEntries()[m].getValue()<<endl;
-//    }
-
-
-
-    SequentialMatrix *result =  sm->MultiplyBy(sm2);
+    auto *result =  sm->MultiplyBy(sm2);
 
     int count =0;
-    for(int a = 0; a < 9; a++){
+    for(int a = 0; a < 36; a++){
         cout<< *result->getEntries()[a].getValue()<<endl;
         count++;
     }
-    cout<<count<<endl;
-
-/*
-    for (int i = 0; i < 4; i++) {
-        cout << "matrix1: " << *sm->getEntries()[i].getValue() << " matrix2: ";
-        cout << *sm2->getEntries()[i].getValue() << endl;
-    }
-*/
-    cout << "-------" << endl;
-
-    //cout<<*sm->getValue(3,3)<<endl;
+    cout<<"number of entry values: "<<count<<endl;
 
 
 
-    delete sm;
-    delete sm2;
-  //  delete result;
-
-    logMessage("stop here");
+    t2 = clock();
+    logMessage("stop here:");
+    float diff ((float)t2-(float)t1);
+    cout <<"runtime : " << diff<<" microsc"<<endl;
+    diff = diff/CLOCKS_PER_SEC;
+    cout <<"runtime : " << diff<<" sc"<<endl;
 }
