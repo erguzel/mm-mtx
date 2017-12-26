@@ -147,11 +147,11 @@ public:
         int index = 0;
         int i =0; int j = 0; int k = 0;
 
-        for (i = 0; i < 2; i++) {
-            for (j = 0; j < 2; j++) {
-               for(k = 0; k<2; k++){
+        for (i = 0; i < _rowNum; i++) {
+            for (j = 0; j < _colNum; j++) {
+               for(k = 0; k< factor->_colNum; k++){
                    reusltant += *getRow(i + 1)[k] * (*factor->getColumn(j + 1)[k]);
-                   if(k == 1){
+                   if(k == factor->getColNum()-1){
                        product->getEntries()[index] = *new Entry(i+1,j+1,reusltant);
                        index++;
                        reusltant = 0;
@@ -302,14 +302,23 @@ private:
  */
 int main(int arg, char **args) {
 
-    SequentialMatrix *sm = new SequentialMatrix(2, 2, 1, false);
-    SequentialMatrix *sm2 = new SequentialMatrix(2, 2, 5, false);
+    SequentialMatrix *sm = new SequentialMatrix(3, 3, 1, false);
+    SequentialMatrix *sm2 = new SequentialMatrix(3, 3, 10, false);
+
+//    for(int m =0; m<9; m++){
+//        cout<< *sm2->getEntries()[m].getValue()<<endl;
+//    }
+
+
 
     SequentialMatrix *result =  sm->MultiplyBy(sm2);
 
-    for(int a = 0; a < 4; a++){
+    int count =0;
+    for(int a = 0; a < 9; a++){
         cout<< *result->getEntries()[a].getValue()<<endl;
+        count++;
     }
+    cout<<count<<endl;
 
 /*
     for (int i = 0; i < 4; i++) {
@@ -325,6 +334,7 @@ int main(int arg, char **args) {
 
     delete sm;
     delete sm2;
+  //  delete result;
 
     logMessage("stop here");
 }
