@@ -137,9 +137,10 @@ public:
     Entry *getEntries() {
         return _Entries;
     }
-
+#pragma omp
 public:
     SequentialMatrix *MultiplyBy(SequentialMatrix *factor) {
+
         SequentialMatrix *product = new SequentialMatrix(_rowNum,_colNum, true);
         float reusltant = 0;
         int index = 0;
@@ -165,6 +166,10 @@ public:
  */
 public:
     float **getRow(short rownum) {
+
+        if(rownum == 0){
+            cout<<"error!.. minimum column or row number starts from 1"<<endl;
+        }
 
         float *wholerow[_colNum];
         int entryindex = (rownum - 1) * _colNum;
@@ -301,10 +306,10 @@ int main(int arg, char **args) {
     clock_t t1,t2;
     t1 = clock();
     //deletes associated object automatically from the unorganized memory after scope.
-    auto *sm = new SequentialMatrix(6, 6, 1, false);
-    auto *sm2 = new SequentialMatrix(6, 6, 1 , false);
+    SequentialMatrix *sm =  new SequentialMatrix(6, 6, 1, false);
+    SequentialMatrix *sm2 = new SequentialMatrix(6, 6, 1 , false);
 
-    auto *result =  sm->MultiplyBy(sm2);
+    SequentialMatrix *result =  sm->MultiplyBy(sm2);
 
     int count =0;
     for(int a = 0; a < 36; a++){
@@ -314,7 +319,9 @@ int main(int arg, char **args) {
     cout<<"number of entry values: "<<count<<endl;
 
 
-
+    delete sm;
+    delete sm2;
+    delete result;
     t2 = clock();
     logMessage("stop here:");
     float diff ((float)t2-(float)t1);
