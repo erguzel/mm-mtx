@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <thread>
+#include <signal.h>
 
 
 #pragma message ("please use -a or -b options for subquestions of task1.")
@@ -11,10 +12,11 @@
 
 using namespace std;
 
-//accepted commandline parameters
-
+//-----GLOBAL VARIABLES-------------
+/**
+ * Accepted commandline parameters
+ */
 const string parameters[2] = {"-a", "-b"};
-
 /**
  * Represents the run mode -a
  */
@@ -27,14 +29,15 @@ static bool isB = false;
  * Represents the clock frequency calculation mode -clock
  */
 static bool isClock = false;
-
 /**
  * Represents current command line argument value
  */
 string option;
+//--END--- GLOBAL VARIABLES-------
 
-//--------utilization functions
 
+
+//--------UTILIZATION FUNCTIONS
 /**
  * Writes a simple string message to the console
  * @param message the string consol message
@@ -42,9 +45,11 @@ string option;
 void logMessage(string message) {
     cout << message << endl;
 }
+//--END----UTILIZATION FUNCTIONS -------------
 
-//-----USER DEFINED TYPES
 
+
+//-------USER DEFINED TYPES
 /**
  * Represents a single matrix entry
  */
@@ -94,13 +99,13 @@ public:
     }
 
 };
-
 /**
  * Represents a matrix object with sequential elements
  */
 class SequentialMatrix {
-
+    //represents column and row lenths of SequentialMatrix object
     int _rowNum, _colNum;
+    //Represents the pointer collection of Entry instances
     Entry *_Entries;
 /**
  * Creates an instance of SequentialMatrix object
@@ -112,7 +117,6 @@ class SequentialMatrix {
  */
 public:
     SequentialMatrix(int rownum, int colnum, float startvalu = 1, bool nonInitialize = true) {
-
         //represents the Entry list instances
         _Entries = new Entry[rownum * colnum];
         //represents how many rows of the matrix instance has
@@ -123,6 +127,34 @@ public:
         //if not want to fill the matrix entries while creating the SequentialMatrix instance
         if(!nonInitialize){
             setSequentialEntries(rownum, colnum, startvalu);
+        }
+    }
+    /**
+ *
+ * @param rown row dimension of the matrix object
+ * @param coln column dimension of the matrix object
+ * @param startvalue first index element of the matrix entries i.e a_11 value
+ */
+    void setSequentialEntries(int rown, int coln, float startvalue) {
+
+        if(rown == 0 || coln==0){
+            logMessage("SequentialMatrix object must have at least 1 row and 1 column.");
+            logMessage("Quitting..");
+            throw std::exception();
+        }
+        int row, column;
+        startvalue = (startvalue == 0) ? 1 : startvalue;
+        int index = (startvalue != 1) ? 1 : startvalue;
+//        int size = rown*coln ;
+
+        for (int i = 0; i < rown; i++) {
+
+            for (int j = 0; j < coln; j++) {
+
+                _Entries[index - 1] = Entry(i + 1, j + 1, startvalue);
+                index++;
+                startvalue++;
+            }
         }
     }
 /**
@@ -149,17 +181,24 @@ public:
     int getColNum() {
         return _colNum;
     }
-
     /**
      * Get the value  pointer of the matrix element for the given row and column indices (!= indexes) i.e. M(3,5)
      */
 public:
     float *getValue(short rowind, short colind) {
-
-        return (_Entries[rowind * colind - 1].getValue());
-
+        if(rowind == 0 || colind == 0){
+            logMessage("SequentialMatrix object must have at least 1 row and 1 column.");
+            logMessage("Quitting..");
+            throw std::exception();
+        }
+        if(rowind>_rowNum || colind > _colNum){
+            logMessage("You demand a nonexisting element..");
+            logMessage("Quitting..");
+            throw std::exception();
+        }
+        int index = (colind-1) + ((rowind-1) * _colNum);
+        return (_Entries[index].getValue());
     }
-
 /**
  * gets the pointer collection of entry objects
  */
@@ -167,49 +206,51 @@ public:
     Entry *getEntries() {
         return _Entries;
     }
-
     /**
      * @param factor represents the pointer of target matrix to be multiplied.
      * @returns creates another instance of resultant matrix and return its pointer.
      */
 public:
     SequentialMatrix *MultiplyBy(SequentialMatrix *factor) {
+        bool isMultipliable = (_colNum == factor->getRowNum())? true:false;
 
-        SequentialMatrix *product = new SequentialMatrix(_rowNum,_colNum, true);
+        if(!isMultipliable){
+            logMessage("error!..matrix dimensions not match!, quitting..");
+            throw std::exception();
+        }
+        SequentialMatrix *product = new SequentialMatrix(_rowNum,factor->getColNum(),true);
         float reusltant = 0;
         int index = 0;
         int i =0; int j = 0; int k = 0;
         for (i = 0; i < _rowNum; i++) {
-            for (j = 0; j < _colNum; j++) {
-               for(k = 0; k< factor->_colNum; k++){
-                   reusltant += *getRow(i + 1)[k] * (*factor->getColumn(j + 1)[k]);
-                   if(k == factor->getColNum()-1){
-                       product->getEntries()[index] = *new Entry(i+1,j+1,reusltant);
-                       index++;
-                       reusltant = 0;
-                   }
-               }
+            for (j = 0; j < factor->getColNum(); j++) {
+                for(k = 0; k< _colNum; k++){
+                    reusltant += *getRow(i + 1)[k] * (*factor->getColumn(j + 1)[k]);
+                    if(k == _colNum-1){
+                        product->getEntries()[index] = *new Entry(i+1,j+1,reusltant);
+                        index++;
+                        reusltant = 0;
+                    }
+                }
             }
         }
-
         return product;
     }
 /**
  * Gets the pointer list of row values for the given row number (1st row, second row etc..)
  */
 public:
-    float **getRow(short rownum) {
-
-        if(rownum == 0){
-            cout<<"error!.. minimum column or row number starts from 1"<<endl;
-        }
-
+    float **getRow(int rownum) {
         float *wholerow[_colNum];
+        if(rownum == 0 || rownum > _rowNum ){
+            cout<<"error!.. You demanded a nonexisting entry value. Minimum column or row number starts from 1"<<endl;
+            throw std::exception(); //TODO should end the program
+        }
         int entryindex = (rownum - 1) * _colNum;
         int index = 0;
         float *adress;
         Entry ent;
-        for (index; index < _colNum; index++) {
+        for (int index=0; index <= _colNum; index++) {
             adress = _Entries[index + entryindex].getValue();
             wholerow[index] = adress;
         }
@@ -220,52 +261,22 @@ public:
  */
 public:
     float **getColumn(short colnum) {
-
+        if(colnum == 0 || colnum >_colNum ){
+            cout<<"error!.. You demanded a nonexisting entry value. Minimum column or row number starts from 1"<<endl;
+            throw std::exception(); //TODO ends the program
+        }
         float *wholecolumn[_rowNum];
-
+        float* adress;
+        int topIndex = (colnum-1)+(_colNum*(_rowNum-1));
         int index = 0;
-        int entryindex = (colnum - 1);
-        float *adress;
-        Entry ent;
-        for (index; index < _colNum; index++) {
-            adress = _Entries[entryindex].getValue();
+        for(int i = colnum-1; i<topIndex+1; i = i + _colNum){
+            adress = _Entries[i].getValue();
             wholecolumn[index] = adress;
-            entryindex = entryindex + _rowNum;
-            //cout<< *asd <<endl;
+            index++;
         }
         return wholecolumn;
     }
-
-/**
- *
- * @param rown row dimension of the matrix object
- * @param coln column dimension of the matrix object
- * @param startvalu first index element of the matrix entries i.e a_11 value
- */
-    void setSequentialEntries(int rown, int coln, float startvalu) {
-
-        startvalu = (startvalu == 0) ? 1 : startvalu;
-        int index = (startvalu != 1) ? 1 : startvalu;
-//        int size = rown*coln ;
-
-        for (int i = 0; i < rown; i++) {
-
-            for (int j = 0; j < coln; j++) {
-
-                _Entries[index - 1] = Entry(i + 1, j + 1, startvalu);
-                index++;
-                startvalu++;
-            }
-        }
-    }
-
-private:
-    void setRandomEntries(int rown, int coln, float interval) {
-        //TODO
-    }
-
 };
-
 /**
  * Represents the program initializer object
  */
@@ -332,45 +343,107 @@ private:
         }
     }
 };
+//-----END -- USER DEFINED TYPES-------------
 
-void  test(int arg, char** args){
-    clock_t t1,t2;
-   t1 = clock();
-   SequentialMatrix *sm =  new SequentialMatrix(100, 100, 1, false);
-   SequentialMatrix *sm2 = new SequentialMatrix(100, 100, 101 , false);
 
-   SequentialMatrix *result =  sm->MultiplyBy(sm2);
 
+//------ TEST METHODS -----------------
+/**
+ * Writes the Entry values of the matrix to the console screen.
+ * @param sqm The pointer of the SequentialMatrix object at the heap
+ */
+void testMatrixEntries(SequentialMatrix *sqm) {
+    cout<<"----TEST MATRIX ENTRIES-----"<<endl;
+    for (int i = 0; i < sqm->getRowNum()*sqm->getColNum(); i++) {
+        cout<<"M("<< sqm->getEntries()[i].getRowInd()<<","<<sqm->getEntries()[i].getColInd()<<")= "<<*sqm->getEntries()[i].getValue()<<endl;
+    }
+    cout<<"----end TEST MATRIX ENTRIES-----"<<endl;
+}
+/**
+ * Writes the row values of given matrix and with desired row number to the console
+ * @param sqm represents the pointer of the SequentialMatrix object instance
+ * @param rowNum represents the desired row number of the SequentialMatrix object instance
+ */
+void  testGetRow(SequentialMatrix *sqm, int rowNum){
+    cout<<"----TEST GET ROW-----"<<endl;
+    for(int i = 0; i < sqm->getColNum(); i++){
+        cout<<*sqm->getRow(rowNum)[i]<<endl;
+    }
+    cout<<"---- end TEST GET ROW-----"<<endl;
+}
+/**
+ * Writes the column values of given matrix and with desired row number to the console
+ * @param sqm represents the pointer of the SequentialMatrix object instance
+ * @param colNum represents the desired column number of the SequentialMatrix object instance
+ */
+void testGetColumn(SequentialMatrix *sqm, int colNum){
+    cout<<"----TEST GET COLUMN-----"<<endl;
+
+    for(int i = 0; i < sqm->getRowNum(); i++){
+        cout<<*sqm->getColumn(colNum)[i]<<endl;
+    }
+
+    cout<<"----end TEST GET COLUMN-----"<<endl;
+}
+/**
+ * Writes the value of the Entry object instance of given matrix with desired row and column numbers to the console
+ * @param sqm represents the pointer of SequentialMatrix object at the heap
+ * @param rowNum Represents the row number of desired  value
+ * @param colNum Represents the column number of desired value
+ */
+void testGetValue(SequentialMatrix* sqm, int rowNum, int colNum){
+    cout<<"----TEST GET VALUE-----"<<endl;
+
+    cout<< "value for M("<<rowNum<<","<<colNum<<")= " << *sqm->getValue(rowNum,colNum)<<endl;
+
+    cout<<"----end TEST GET VALUE-----"<<endl;
+}
+/**
+ * Writes the entry values of the resultant matrix multiplication to the console
+ * @param matrixA represents the first matrix in commutator
+ * @param matrixB represents the second matrix in commutator
+ * @return returns the resultant matrix pointer after multiplication
+ */
+SequentialMatrix*  testMatrixMultiply(SequentialMatrix *matrixA, SequentialMatrix *matrixB){
+    cout<<"-------TEST MATRIX MULTIPLY_____"<<endl;
+   SequentialMatrix *result =  matrixA->MultiplyBy(matrixB);
    int count =0;
-
-
-   for(int a = 0; a < 100; a++){
+   for(int a = 0; a < matrixA->getRowNum()*matrixB->getColNum(); a++){
        cout<< *result->getEntries()[a].getValue()<<endl;
        count++;
    }
-   cout<<"number of entry values: "<<count<<endl;
-
-
-   delete sm;
-   delete sm2;
-   delete result;
-   t2 = clock();
-   logMessage("stop here:");
-   float diff ((float)t2-(float)t1);
-   cout <<"runtime : " << diff<<" microsc"<<endl;
-   diff = diff/CLOCKS_PER_SEC;
-   cout <<"runtime : " << diff<<" sc"<<endl;
-
+    cout<<"-------end TEST MATRIX MULTIPLY_____"<<endl;
+    return  result;
 }
 
-/**
- * Main program logic.
- * @param arg represents the size of the command line argument char array
- * @param args represents the pointer array of command line argument values
- */
 
+//---END--- TEST METHODS ---------------
+
+
+
+//-------<MAIN>-----------------------//
 int main(int arg, char **args) {
-    test(arg,args);
-    unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
 
-}
+    clock_t t1,t2;
+    t1 = clock();
+    SequentialMatrix * A = new SequentialMatrix(4,3,1, false);
+    SequentialMatrix * B = new SequentialMatrix(3,4,13, false);
+    SequentialMatrix * result = A->MultiplyBy(B);
+    testMatrixEntries(result);
+    testGetRow(result,3);
+    testGetColumn(result,4);
+    testGetValue(result,3,4);
+    cout<<"---End of the program-----"<<endl;
+
+    float diff ((float)t2-(float)t1);
+    cout <<"runtime : " << diff<<" microsc"<<endl;
+    diff = diff/CLOCKS_PER_SEC;
+    delete A;
+    delete B;
+    delete result;
+    cout <<"runtime : " << diff<<" sc"<<endl;
+
+   // unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
+
+    return 0;
+};
