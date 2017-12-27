@@ -105,6 +105,8 @@ public:
 class SequentialMatrix {
     //represents column and row lenths of SequentialMatrix object
     int _rowNum, _colNum;
+    float ** _wholeRow;
+    float ** _wholeColumn;
     //Represents the pointer collection of Entry instances
     Entry *_Entries;
 /**
@@ -254,7 +256,10 @@ public:
             adress = _Entries[index + entryindex].getValue();
             wholerow[index] = adress;
         }
-        return wholerow;
+        _wholeRow = wholerow;
+
+        return _wholeRow;
+
     }
 /**
  * Gets the pointer list of column values for the given column number (i.e C(2))
@@ -274,7 +279,8 @@ public:
             wholecolumn[index] = adress;
             index++;
         }
-        return wholecolumn;
+        _wholeColumn = wholecolumn;
+        return _wholeColumn;
     }
 };
 /**
@@ -435,6 +441,7 @@ int main(int arg, char **args) {
     testGetValue(result,3,4);
     cout<<"---End of the program-----"<<endl;
 
+    t2=clock();
     float diff ((float)t2-(float)t1);
     cout <<"runtime : " << diff<<" microsc"<<endl;
     diff = diff/CLOCKS_PER_SEC;
