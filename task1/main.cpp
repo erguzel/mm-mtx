@@ -3,11 +3,10 @@
 //
 
 #include <iostream>
-#include <thread>
-#include <signal.h>
+#include <omp.h>
 
 
-#pragma message ("please use -a or -b options for subquestions of task1.")
+#pragma message ("please use -pl switch for parallel run and -cl switch for clock time calculation.")
 #pragma message ("please send -clock flag to enable clock time calculation.")
 
 using namespace std;
@@ -18,13 +17,14 @@ using namespace std;
  */
 const string parameters[2] = {"-a", "-b"};
 /**
- * Represents the run mode -a
+ * command line switch for parallel run of the application
  */
-static bool isA = false;
+static bool isParalel = false;
+
 /**
- * Represents the run mode -b
+ * command line switch for clock time option
  */
-static bool isB = false;
+static bool isClockMode = false;
 /**
  * Represents the clock frequency calculation mode -clock
  */
@@ -60,7 +60,9 @@ class Entry {
     float value;
     /**
      * Creates and Entry object instance in the heap.
-     * @param rowid
+     * @param rowid Represents the row id of the matrix entry
+     * @param colid Represents the col id of the matrix entry
+     * @param val Represents the value of the matrix entry
      */
 public:
     Entry(int rowid, int colid, float val) {
@@ -148,7 +150,7 @@ public:
         startvalue = (startvalue == 0) ? 1 : startvalue;
         int index = (startvalue != 1) ? 1 : startvalue;
 //        int size = rown*coln ;
-
+       // #pragma omp parallel for if(isParallel) //compiles parallel loop if -pl switch enabled
         for (int i = 0; i < rown; i++) {
 
             for (int j = 0; j < coln; j++) {
@@ -304,17 +306,9 @@ public:
  */
 private:
     static void commandLineParser(int arg, char **args) {
-        // cout<<"the parameter is"<<option<<endl;
-
-        //no parameters provided
         if (arg == 1) {
-            isA = true;
-            isB = true;
-            logMessage("Multimode run is enabled.");
+            logMessage("Non parallel run is enabled.");
         }
-
-        // firts argument is the file itself.
-        //check argument number
         if (arg - 1 > 2) {
             logMessage("error.. too may arguments specified. Quitting...");
             return;
@@ -322,29 +316,24 @@ private:
             bool flag = false;
             for (int i = 1; i < arg; i++) {
                 option = args[i];
-                // if one of the parameters is -a
-                if (option == "-a") {
-                    logMessage("mode a is activated..");
-                    isA = true;
+                if (option == "-pl") {
+                    logMessage("parallel mode a is activated..");
+                    isParalel = true;
                     flag = true;
                 }
                     //if one if the parameters is -b
-                else if (option == "-b") {
-                    logMessage("mode b is activated..");
-                    isB = true;
+                else if (option == "-cl") {
+                    logMessage("clock mode b is activated..");
                     flag = true;
                 } else {
                     cout << "the argument " << args[i] << " is not supported yet" << endl;
                 }
 
             }
-
             if (flag == true) {
                 logMessage("program starting with valid arguments..");
             } else {
-                logMessage("To run in multimode, please specify no parameter or specify both correctly.");
-                logMessage("No valid argument provided, quitting...");
-                return;
+                logMessage("program starting with default configuration..");
             }
         }
     }
@@ -430,15 +419,18 @@ SequentialMatrix*  testMatrixMultiply(SequentialMatrix *matrixA, SequentialMatri
 //-------<MAIN>-----------------------//
 int main(int arg, char **args) {
 
+    initializer in;
+    in.Initialize(arg,args);
+    /*
     clock_t t1,t2;
     t1 = clock();
-    SequentialMatrix * A = new SequentialMatrix(4,3,1, false);
-    SequentialMatrix * B = new SequentialMatrix(3,4,13, false);
+    SequentialMatrix * A = new SequentialMatrix(2,2,1, false);
+    SequentialMatrix * B = new SequentialMatrix(2,2,1, false);
     SequentialMatrix * result = A->MultiplyBy(B);
     testMatrixEntries(result);
-    testGetRow(result,3);
-    testGetColumn(result,4);
-    testGetValue(result,3,4);
+    testGetRow(result,2);
+    testGetColumn(result,2);
+    testGetValue(result,2,2);
     cout<<"---End of the program-----"<<endl;
 
     t2=clock();
@@ -449,8 +441,18 @@ int main(int arg, char **args) {
     delete B;
     delete result;
     cout <<"runtime : " << diff<<" sc"<<endl;
-
+*/
    // unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
+    int i;
+    int numthreads = 4;
+#pragma omp parallel for default(none) num_threads(numthreads) private(i)
+    for (i = 0; i < 100; i++)
+    {
+        int tid = omp_get_thread_num();
+        int noft = omp_get_num_threads();
 
+        //cout<<"Hello world from omp thread "<< tid<<endl;
+        cout<<noft<<endl;
+    }
     return 0;
 };
