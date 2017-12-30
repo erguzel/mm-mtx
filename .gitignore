@@ -13,3 +13,5 @@ cmake-build-debug/
 .DS_Store
 CMakeCache.txt
 CMakeFiles/
+#output folder
+/bin

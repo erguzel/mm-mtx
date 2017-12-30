@@ -8,7 +8,7 @@
 /**
  * Represents an abstract object of a matrix
  */
-class Matrix {
+class IMatrix {
 
 };
 
