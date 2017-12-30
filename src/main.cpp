@@ -7,8 +7,9 @@
 #include "datatype/SequentialMatrix.h"
 #include "test.h"
 
-#pragma message ("please use -a or -b options for subquestions of task1.")
-#pragma message ("please send -clock flag to enable clock time calculation.")
+#pragma message ("please send -pl flag for running all loops in parallel.")
+#pragma message ("please send -cl flag to enable clock time calculation.")
+#pragma message ("please send -nt option with parameter for predetermining number of threads. i.e mmxgbra -nt 4")
 
 using namespace std;
 
