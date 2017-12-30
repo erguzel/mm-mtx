@@ -7,6 +7,9 @@
 
 #include <string>
 #include <iostream>
+#include <algorithm>
+
+using namespace std;
 
 /**
  * Represents the program initializer object
@@ -17,30 +20,30 @@ class Initializer {
 /**
  * Accepted commandline parameters
  */
-    const std::string parameters[2] = {"-a", "-b"};
+    const std::string parameters[3] = {"-pl", "-cl", "-nt"};
 /**
- * Represents the run mode -a
+ * Represents the run mode in paralel
  */
-   static bool isA;
+    bool isPL;
 /**
- * Represents the run mode -b
+ * Represents the run mode with clock time
  */
-    static bool isB;
+    bool isCL;
 /**
  * Represents the clock frequency calculation mode -clock
  */
-    static bool isClock;
+    int isNT = 0;
 /**
  * Represents current command line argument value
  */
-    static std::string option;
+    std::string option;
 //--END--- GLOBAL VARIABLES-------
 
 /**
  * Initializes the program with the required configurations.
  */
 public:
-    static void Initialize(int arg, char **args) {
+    void Initialize(int arg, char **args) {
 
         commandLineParser(arg, args);
     }
@@ -49,8 +52,13 @@ private:/**
  * Writes a simple string message to the console
  * @param message the string consol message
  */
-    static void logMessage(std::string message) {
+    void logMessage(std::string message) {
         std::cout << message << std::endl;
+    }
+
+    bool is_number(const std::string &s) {
+        return !s.empty() && std::find_if(s.begin(),
+                                          s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
     }
 
 /**
@@ -59,50 +67,44 @@ private:/**
  * @param args commandline argument pointer list
  */
 private:
-    static void commandLineParser(int arg, char **args) {
-        // cout<<"the parameter is"<<option<<endl;
-
-        //no parameters provided
-        if (arg == 1) {
-            isA = true;
-            isB = true;
-            logMessage("Multimode run is enabled.");
-        }
+    void commandLineParser(int arg, char **args) {
 
         // firts argument is the file itself.
         //check argument number
-        if (arg - 1 > 2) {
+        int para=0;
+        if (arg > 5) {
             logMessage("error.. too may arguments specified. Quitting...");
             return;
         } else {
-            bool flag = false;
             for (int i = 1; i < arg; i++) {
                 option = args[i];
                 // if one of the parameters is -a
-                if (option == "-a") {
-                    logMessage("mode a is activated..");
-                    isA = true;
-                    flag = true;
+                if (option == "-pl") {
+                    logMessage("parallel mode is activated..");
+                    isPL = true;
                 }
                     //if one if the parameters is -b
-                else if (option == "-b") {
-                    logMessage("mode b is activated..");
-                    isB = true;
-                    flag = true;
+                else if (option == "-cl") {
+                    logMessage("clock mode is on..");
+                    isCL = true;
+                } else if (option == "-nt") {
+
+                    if (is_number(args[i])) {
+                        option = args[i + 1];
+                        para = std::stoi(option);
+                    } else {
+                        std::cout << "the option parameter " << args[i + 1] << " is not in correct format" << std::endl;
+                        return;
+                    }
+
                 } else {
                     std::cout << "the argument " << args[i] << " is not supported yet" << std::endl;
+                    return;
                 }
-
             }
 
-            if (flag == true) {
-                logMessage("program starting with valid arguments..");
-            } else {
-                logMessage("To run in multimode, please specify no parameter or specify both correctly.");
-                logMessage("No valid argument provided, quitting...");
-                return;
-            }
         }
+
     }
 };
 //-----END -- USER DEFINED TYPES-------------
