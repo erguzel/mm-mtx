@@ -134,6 +134,8 @@ public:
         float reusltant = 0;
         int index = 0;
         int i =0; int j = 0; int k = 0;
+
+#pragma omp parallel for
         for (i = 0; i < _rowNum; i++) {
             for (j = 0; j < factor->getColNum(); j++) {
                 for(k = 0; k< _colNum; k++){

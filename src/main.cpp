@@ -19,43 +19,16 @@ using namespace std;
 
 int main(int arg, char **args) {
 
-    int nthreads, tid;
 
-#pragma paralel private(tid)
-    {tid = omp_get_thread_num();
-        nthreads=omp_get_num_threads();
-        cout<< "threadNUm: " <<tid<<"--"<<"nthreads: "<< nthreads <<endl;
-#pragma omp for
-        for (int i = 0; i < 100; i++) {
-            cout << "number: " << i << endl;
-
-        }
-    }
-
-/*
-#pragma omp parallel private(tid)
-    {
-
-        tid = ::omp_get_thread_num();
-        printf("Hello World from thread = %d\n", tid);
-
-        //Only master thread does this
-        if (tid == 0) {
-            nthreads = ::omp_get_num_threads();
-            printf("Number of threads = %d\n", nthreads);
-        }
-
-    }
-*/
     //testParalelLoopBasic() ;
 
     //Initializer i;
     //i.Initialize(arg,args);
-    //clock_t t1,t2;
-    //t1 = clock();
-    /*
-    SequentialMatrix * A = new SequentialMatrix(6,6,1, false);
-    SequentialMatrix * B = new SequentialMatrix(6,6,37, false);
+    clock_t t1,t2;
+    t1 = clock();
+
+    SequentialMatrix * A = new SequentialMatrix(3,3,1, false);
+    SequentialMatrix * B = new SequentialMatrix(3,3,1, false);
     SequentialMatrix * result = A->MultiplyBy(B);
     testMatrixEntries(result);
     testGetRow(result,3);
@@ -73,6 +46,6 @@ int main(int arg, char **args) {
     cout <<"runtime : " << diff<<" sc"<<endl;
 
    // unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
-*/
+
     return 0;
 };
