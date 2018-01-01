@@ -10,6 +10,14 @@
 
 using namespace std;
 
+void testParalelLoopBasic(){
+
+    for(int i = 0; i < 100 ; i++){
+        cout<<"number: " << i<< endl;
+    }
+}
+
+
 //------ TEST METHODS -----------------
 /**
  * Writes the Entry values of the matrix to the console screen.
