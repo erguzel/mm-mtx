@@ -2,8 +2,8 @@
 // Created by oe019 on 30.12.17.
 //
 
-#ifndef IHPC_2017_WINTER_INITIALIZER_H
-#define IHPC_2017_WINTER_INITIALIZER_H
+#ifndef MATRIX_MULTIPLIER_RESOLVER_H
+#define MATRIX_MULTIPLIER_RESOLVER_H
 
 #include <string>
 #include <iostream>

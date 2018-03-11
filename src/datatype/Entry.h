@@ -2,8 +2,8 @@
 // Created by oe019 on 30.12.17.
 //
 
-#ifndef IHPC_2017_WINTER_ENTRY_H
-#define IHPC_2017_WINTER_ENTRY_H
+#ifndef MATRIX_MULTIPLIER_RESOLVER_H
+#define MATRIX_MULTIPLIER_RESOLVER_H
 
 class Entry {
         //represents column and row indexes in mathematical expression
