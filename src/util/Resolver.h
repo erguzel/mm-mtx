@@ -1,0 +1,8 @@
+//
+// Created by Olgun Erguzel on 11.03.2018.
+//
+
+#ifndef MATRIX_MULTIPLIER_RESOLVER_H
+#define MATRIX_MULTIPLIER_RESOLVER_H
+
+#endif //MATRIX_MULTIPLIER_RESOLVER_H
