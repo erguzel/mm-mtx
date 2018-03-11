@@ -14,32 +14,59 @@
 
 using namespace std;
 
-//-------<MAIN>-----------------------//
-
 int main(int arg, char **args) {
-    //Initializer i;
-    //i.Initialize(arg,args);
-    clock_t t1,t2;
+    clock_t t1, t2;
     t1 = clock();
-    SequentialMatrix * A = new SequentialMatrix(6,6,1, false);
-    SequentialMatrix * B = new SequentialMatrix(6,6,37, false);
-    SequentialMatrix * result = A->MultiplyBy(B);
-    testMatrixEntries(result);
-    testGetRow(result,3);
-    testGetColumn(result,3);
-    testGetValue(result,3,3);
-    cout<<"---End of the program-----"<<endl;
+    initializer in;
+    in.Initialize(arg, args);
 
-    t2=clock();
-    float diff ((float)t2-(float)t1);
-    cout <<"runtime : " << diff<<" microsc"<<endl;
-    diff = diff/CLOCKS_PER_SEC;
-    delete A;
-    delete B;
-    delete result;
-    cout <<"runtime : " << diff<<" sc"<<endl;
+    SequentialMatrix *A = new SequentialMatrix(4, 3, 1, false);
+    //testEntryRow(A->getEntryRow(6));
+    SequentialMatrix *B = new SequentialMatrix(3, 5, 1, false);
+    //C needs a row number 5 and any col number
+    SequentialMatrix *C = new SequentialMatrix(5,2,1, false);
+    //testEntryRow(B->getEntryRow(6));
 
-   // unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
+    testMatrixEntries(A,"A");
+    testMatrixEntries(B,"B");
+    testMatrixEntries(C,"C");
+
+    SequentialMatrix *result;
+    SequentialMatrix *resultant;
+
+    if (Resolver::isParalell) {
+        cout << "number of threads: " << Resolver::number_of_threads << endl;
+        resultant = A->ParallelMultiplyBy(B);
+        result = resultant->ParallelMultiplyBy(C);
+        testMatrixEntries(result, "ABC");
+        //
+        Resolver::finish = clock();
+        if(Resolver::isClock){
+            float diff((float) Resolver::finish - (float) Resolver::start);
+            cout << "runtime : " << diff << " microsc" << endl;
+            Resolver::progressTime = diff / CLOCKS_PER_SEC;
+            cout << "runtime : " << Resolver::progressTime << " sc" << endl;
+        }
+
+    } else {
+        cout << "number of threads: " << Resolver::number_of_threads << endl;
+        resultant = A->ParallelMultiplyBy(B);
+        result = resultant->MultiplyBy(C);
+        testMatrixEntries(result, "ABC");
+        //
+        Resolver::finish = clock();
+        if(Resolver::isClock){
+            float diff((float) Resolver::finish - (float) Resolver::start);
+            cout << "runtime : " << diff << " microsc" << endl;
+            Resolver::progressTime = diff / CLOCKS_PER_SEC;
+            cout << "runtime : " << Resolver::progressTime << " sc" << endl;
+        }
+    }
+
+    // delete A;
+    //delete B;
+    //delete result;
+
 
     return 0;
 };
