@@ -2,55 +2,68 @@
 // Created by oe019 on 30.12.17.
 //
 
-#ifndef MATRIX_MULTIPLIER_RESOLVER_H
-#define MATRIX_MULTIPLIER_RESOLVER_H
+#ifndef MATRIX_MULTIPLIER_ENTRY_H
+#define MATRIX_MULTIPLIER_ENTRY_H
 
 class Entry {
-        //represents column and row indexes in mathematical expression
-        int rowInd, colInd;
-        //represents the value of the entry
-        float value;
-        /**
-         * Creates and Entry object instance in the heap.
-         * @param rowid
-         */
-    public:
-        Entry(int rowid, int colid, float val) {
-            rowInd = rowid;
-            colInd = colid;
-            value = val;
-        }
+    //represents column and row indexes in mathematical expression
+    int entryX=0, entryY=0, OriginalIndexPosition=0;
+    //represents the value of the entry
+    float value;
+
+    /**
+     * Creates and Entry object instance in the heap.
+     * @param rowid Represents the row id of the matrix entry
+     * @param colid Represents the col id of the matrix entry
+     * @param val Represents the value of the matrix entry
+     */
+public:
+    Entry(int rowid, int colid, float val) {
+        entryX = rowid;
+        entryY = colid;
+        value = val;
+    }
+
 /**
  * Instance constructor with no parameter;
  */
-        Entry() {}
+    Entry() {}
 /**
  * Gets the row index of the Entry instance
  * @returns the row index of the entry
  */
-    public:
-        int getRowInd() {
-            return rowInd;
-        }
+public:
+    int getEntryRowInd() {
+        return entryX;
+    }
+
+public:void setOriginalIndexPosition(int positionIndex){
+
+        OriginalIndexPosition = positionIndex;// todo error handle
+    }
+
+public:int getOriginalIndexPosition(){
+        return OriginalIndexPosition;
+    }
 
 /**
  * Gets the column indice of the Entry instance
  * @returns the column indice of the
  */
-    public:
-        int getColInd() {
-            return colInd;
-        }
+public:
+    int getEntryColInd() {
+        return entryY;
+    }
 /**
  * Gets the value pointer of the Entry instance
  * @returns the value pointer of the Entry instance
  */
-    public:
-        float *getValue() {
-            return &value;
-        }
+public:
+    float *getValue() {
+        return &value;
+    }
 
-    };
+};
 
 
-#endif //IHPC_2017_WINTER_ENTRY_H
+#endif //MATRIX_MULTIPLIER_ENTRY_H

@@ -2,8 +2,8 @@
 // Created by oe019 on 30.12.17.
 //
 
-#ifndef MATRIX_MULTIPLIER_RESOLVER_H
-#define MATRIX_MULTIPLIER_RESOLVER_H
+#ifndef MATRIX_MULTIPLIER_INITIALIZER_H
+#define MATRIX_MULTIPLIER_INITIALIZER_H
 
 #include <string>
 #include <iostream>
@@ -110,4 +110,4 @@ private:
 //-----END -- USER DEFINED TYPES-------------
 
 
-#endif //IHPC_2017_WINTER_INITIALIZER_H
+#endif //MATRIX_MULTIPLIER_INITIALIZER_H
