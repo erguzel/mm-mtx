@@ -22,7 +22,7 @@ public:
 public:
     static clock_t finish;
 public:
-    double progressTime;
+    static  double progressTime;
 public:
     static std::string option;
 public:
